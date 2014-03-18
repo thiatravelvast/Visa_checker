@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-VisaChecker::Application.config.secret_key_base = 'a612b8a78d706c315d06730f55e76bf836383cdf05b317adccc0bd3f73038ea9c632ef88b9fae3b5b63ec2ca4368191dfac9111e223fbd2106a4c784097091b8'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+VisaChecker::Application.config.secret_key_base = secure_token
